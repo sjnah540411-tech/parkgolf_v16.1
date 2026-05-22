@@ -101,7 +101,7 @@
             <button class="btn-large btn-secondary" onclick="loadLastGame()">이어하기</button>
             <button id="theme-btn" class="btn-large" style="background-color: #333; color: #fff;" onclick="toggleTheme()">🌙 다크 모드 (배터리 절약)</button>
         </div>
-        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (공유기능 개선판)</div>
+        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (상세표 이미지 오류 수정됨)</div>
     </div>
 
     <div id="screen-setup" class="screen">
@@ -502,9 +502,14 @@
                 let parSum = sec.holes.reduce((sum, h) => sum + h.p, 0); sec.holes.forEach(h => { html += `<td style="color:var(--text-muted);">${h.p}</td>`; }); html += `<td style="font-weight:bold;">${parSum}</td></tr>`;
                 g.players.forEach(p => {
                     let pSum = 0; html += `<tr><td style="font-weight:bold;">${p.name}</td>`;
-                    sec.holes.forEach(h => { let s = p.rawScores[h.globalIdx]; let isConf = p.rawConfirmed[h.globalIdx]; if (isConf) { pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)'); html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`; } else { html += `<td style="color:var(--table-border);">-</td>`; } });
+                    sec.holes.forEach(h => {
+                        let s = p.rawScores[h.globalIdx]; let isConf = p.rawConfirmed[h.globalIdx];
+                        if (isConf) { pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)'); html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`; } 
+                        else { html += `<td style="color:var(--table-border);">-</td>`; }
+                    });
                     html += `<td style="font-weight:bold; background:var(--highlight-green); color:var(--primary-color);">${pSum}</td></tr>`;
-                }); html += `</table></div></div>`; container.innerHTML += html;
+                });
+                html += `</table></div></div>`; container.innerHTML += html;
             }); showScreen('screen-past-scoreboard');
         }
 
@@ -556,7 +561,6 @@
                     var img = document.getElementById('sov-img');
                     img.src = dataUrl; img.style.display = 'block';
                     
-                    // [핵심 변경점] 자동 공유 시도 후, 실패하거나 카카오톡 환경이면 다운로드 안내 버튼 제공
                     cv.toBlob(function(blob){
                         if(!blob)return;
                         var file = new File([blob], 'hwacheon_'+Date.now()+'.png', {type:'image/png'});
@@ -567,7 +571,7 @@
                             navigator.share({title:'화천군 파크골프', files:[file]})
                                 .then(function(){ closeSov(); showToast('공유 완료!'); })
                                 .catch(function(e){ 
-                                    showFallbackUI(); // 공유 취소/실패 시 롱터치 및 다운로드 버튼 제공
+                                    showFallbackUI(); 
                                 });
                         } else {
                             showFallbackUI();
@@ -582,9 +586,8 @@
             document.getElementById('sov-hint').style.display = 'block';
         }
 
-        // [조치 2] 직접 다운로드 함수
         function downloadFallbackImage(e) {
-            e.stopPropagation(); // 오버레이 닫힘 방지
+            e.stopPropagation(); 
             var img = document.getElementById('sov-img');
             var a = document.createElement('a');
             a.href = img.src;
@@ -626,21 +629,40 @@
             drawCanvas(secs, '기록조회', localDateKr());
         }
 
+        // --- 상세표 이미지 생성 부분 (오류 수정 완료) ---
         function sharePastScorecard(){
             if(!_currentPastId){showToast('먼저 기록을 선택해 주세요.');return;}
             var list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); var g = list.find(function(x){return x.id===_currentPastId;});
             if(!g||!g.activeHoles||!g.players||!g.players[0].rawScores){showToast('상세 데이터가 없습니다.');return;}
-            var holesMap = []; var key = ''; g.activeHoles.forEach(function(h,idx){var k=h.c+'-'+h.r; if(k!==key){holesMap.push({c:h.c,r:h.r,holes:[]});key=k;} holesMap[holesMap.length-1].holes.push({p:h.p,d:h.d,id:h.id,c:h.c,r:h.r,gi:idx});});
+            
+            var holesMap = []; var key = ''; 
+            // 홀 데이터를 추출할 때 gi: idx 로 저장합니다.
+            g.activeHoles.forEach(function(h,idx){
+                var k=h.c+'-'+h.r; 
+                if(k!==key){holesMap.push({c:h.c,r:h.r,holes:[]});key=k;} 
+                holesMap[holesMap.length-1].holes.push({p:h.p,d:h.d,id:h.id,c:h.c,r:h.r,gi:idx});
+            });
+            
             var secs = [];
             holesMap.forEach(function(sec){
                 var rows = []; var hdr = [{text:'Hole',color:'#00796b',bold:true,bg:'#e0f2f1'}];
                 sec.holes.forEach(function(h){hdr.push({text:String(h.id),color:'#00796b',bold:true,bg:'#e0f2f1'});}); hdr.push({text:'합계',color:'#00796b',bold:true,bg:'#b2dfdb'}); rows.push(hdr);
-                var pr = [{text:'Par',color:'#777777',bold:false,bg:'#f5f5f5'}]; var ps=0; sec.holes.forEach(function(h){ps+=h.p; pr.push({text:String(h.p),color:'#777777',bold:false,bg:'#f5f5f5'});}); pr.push({text:String(ps),color:'#444444',bold:true,bg:'#eeeeee'}); rows.push(pr);
+                
+                var pr = [{text:'Par',color:'#777777',bold:false,bg:'#f5f5f5'}]; var ps=0; 
+                sec.holes.forEach(function(h){ps+=h.p; pr.push({text:String(h.p),color:'#777777',bold:false,bg:'#f5f5f5'});}); 
+                pr.push({text:String(ps),color:'#444444',bold:true,bg:'#eeeeee'}); rows.push(pr);
+                
                 g.players.forEach(function(p){
                     var sm=0; var cells = [{text:p.name,color:'#111111',bold:true,bg:''}];
-                    sec.holes.forEach(function(h){ var s = p.rawScores[h.globalIdx], conf = p.rawConfirmed[h.globalIdx]; if(conf&&s!==undefined){sm+=s; cells.push({text:String(s),color:sClr(s,h.p),bold:true,bg:''});} else{cells.push({text:'-',color:'#aaaaaa',bold:false,bg:'#f0f0f0'});} });
+                    sec.holes.forEach(function(h){
+                        // [수정된 부분] h.globalIdx 대신, 위에서 저장한 h.gi 를 호출하여 점수를 정확히 불러옵니다.
+                        var s = p.rawScores[h.gi], conf = p.rawConfirmed[h.gi]; 
+                        if(conf&&s!==undefined){sm+=s; cells.push({text:String(s),color:sClr(s,h.p),bold:true,bg:''});} 
+                        else{cells.push({text:'-',color:'#aaaaaa',bold:false,bg:'#f0f0f0'});} 
+                    });
                     cells.push({text:String(sm),color:'#00796b',bold:true,bg:'#e8f5e9'}); rows.push(cells);
-                }); secs.push({title: sec.c+'코스 (R'+sec.r+')', rows:rows});
+                }); 
+                secs.push({title: sec.c+'코스 (R'+sec.r+')', rows:rows});
             });
             drawCanvas(secs, `[${g.park||'산천어'}] 상세표`, g.date);
         }
