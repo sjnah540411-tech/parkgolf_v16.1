@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>화천군 파크골프장 (V16.1 카톡공유)</title>
+    <title>화천군 파크골프장 (V16.1 카톡공유 개선)</title>
     <style>
         /* [라이트 모드] 화천군 테마 컬러 */
         :root { 
@@ -81,8 +81,8 @@
         .modal-btn-ok { background-color: var(--primary-color); color: white; }
         
         /* 공유 화면 오버레이 스타일 */
-        #sov { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-        #sov div { background: #fff; border-radius: 12px; padding: 22px 26px; font-size: 16px; font-weight: bold; color: #333; text-align: center; }
+        #sov { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        #sov div { background: transparent; padding: 0; font-size: 16px; font-weight: bold; color: #fff; text-align: center; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         #toast-msg { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; left: 50%; bottom: 60px; transform: translateX(-50%); z-index: 3000; font-weight:bold; }
@@ -103,7 +103,7 @@
             <button class="btn-large btn-secondary" onclick="loadLastGame()">이어하기</button>
             <button id="theme-btn" class="btn-large" style="background-color: #333; color: #fff;" onclick="toggleTheme()">🌙 다크 모드 (배터리 절약)</button>
         </div>
-        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (화천 3대 구장 + 카톡 공유)</div>
+        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (화천 3대 구장 + 카톡 공유 개선)</div>
     </div>
 
     <div id="screen-setup" class="screen">
@@ -203,12 +203,10 @@
     
     <div id="toast-msg">알림</div>
     
-    <div id="sov" onclick="closeSov()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:2000;overflow-y:auto;">
-        <img id="sov-img" src="" style="width:100%;display:none;vertical-align:top;">
-        <div id="sov-loading" style="color:#fff;font-size:16px;font-weight:bold;padding:40px;text-align:center;">이미지 생성 중...</div>
-        <div id="sov-hint" style="display:none;position:fixed;bottom:20px;left:0;width:100%;text-align:center;pointer-events:none;">
-            <span style="background:rgba(0,0,0,0.7);color:#fff;font-size:12px;padding:6px 14px;border-radius:20px;">화면을 캡쳐/조정 후 카톡 전송  |  터치하면 닫힘</span>
-        </div>
+    <div id="sov" onclick="closeSov()">
+        <div id="sov-loading" style="padding:40px;">이미지 생성 중...</div>
+        <img id="sov-img" src="" style="width:100%; max-width:400px; display:none; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <div id="sov-hint" style="display:none; margin-top:20px;"></div>
     </div>
 
     <div id="custom-modal" class="modal-overlay">
@@ -222,12 +220,10 @@
     </div>
 
     <script>
-        // --- 공유용 전역 변수 추가 ---
         let _lastRanked = null; 
         let _lastRnds = null;
         let _currentPastId = null;
 
-        // --- 테마 제어 ---
         function initTheme() {
             const savedTheme = localStorage.getItem('hwc_theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -252,7 +248,6 @@
         }
         window.onload = initTheme;
 
-        // --- 모달 제어 ---
         let currentModalAction = null;
         function showModal(msg, showCancel, onConfirm) {
             document.getElementById('modal-text').innerText = msg;
@@ -266,7 +261,6 @@
             if(currentModalAction) currentModalAction(); 
         }
 
-        // --- 화천군 3대 구장 100% 실측 제원 ---
         const allParkData = {
             '산천어': {
                 A: [ {p:4,d:92}, {p:3,d:58}, {p:3,d:50}, {p:4,d:80}, {p:4,d:100}, {p:3,d:60}, {p:3,d:60}, {p:5,d:130}, {p:4,d:70} ],
@@ -540,7 +534,6 @@
             html += `</tbody>`; 
             document.getElementById('result-table').innerHTML = html; 
             
-            // 공유 데이터 전역 변수 저장
             _lastRanked = ranked; _lastRnds = rounds;
             saveToHistory(ranked, rounds);
         }
@@ -613,7 +606,7 @@
         }
 
         function viewPastScorecard(id) {
-            _currentPastId = id; // 공유용 변수 저장
+            _currentPastId = id; 
             const list = JSON.parse(localStorage.getItem('hwc_history') || '[]');
             const g = list.find(item => item.id === id);
             if (!g) return;
@@ -665,7 +658,7 @@
         }
 
         /* ════════════════════════════════════════════════════════
-           공유 시스템 (Canvas 렌더링 및 Web Share API)
+           공유 시스템 (카카오톡 내장 브라우저 우회 로직 포함)
            ════════════════════════════════════════════════════════ */
         function localDateKr(){var d=new Date();return d.getFullYear()+'. '+String(d.getMonth()+1)+'. '+String(d.getDate())+'. ';}
         function sClr(s,par){if(s<par)return'#1565c0';if(s>par)return'#c62828';return'#333333';}
@@ -673,9 +666,8 @@
         function drawCanvas(secs, label, dateStr) {
             document.getElementById('sov-loading').style.display='block';
             document.getElementById('sov-img').style.display='none';
-            document.getElementById('sov-img').src='';
             document.getElementById('sov-hint').style.display='none';
-            document.getElementById('sov').style.display='block';
+            document.getElementById('sov').style.display='flex';
             
             setTimeout(function() {
                 try {
@@ -685,11 +677,7 @@
                     var W = P + NW + (maxC-1)*CW + P;
                     
                     var y = HD;
-                    secs.forEach(function(sec){
-                        if(sec.title) y += SH;
-                        y += sec.rows.length * RH;
-                        y += 4*S;
-                    });
+                    secs.forEach(function(sec){ if(sec.title) y += SH; y += sec.rows.length * RH; y += 4*S; });
                     var footerH = 16*S;
                     var H = y + footerH;
                     
@@ -697,7 +685,6 @@
                     cv.width = W; cv.height = H;
                     var ctx = cv.getContext('2d');
                     
-                    // 화천군 테마 배경
                     ctx.fillStyle = '#f0f7f7'; ctx.fillRect(0,0,W,H);
                     ctx.fillStyle = '#00796b'; ctx.fillRect(0,0,W,HD);
                     ctx.fillStyle = '#ffffff';
@@ -754,17 +741,30 @@
                     
                     var dataUrl = cv.toDataURL('image/png');
                     document.getElementById('sov-loading').style.display = 'none';
-                    document.getElementById('sov-hint').style.display = 'block';
+                    
                     var img = document.getElementById('sov-img');
                     img.src = dataUrl; img.style.display = 'block';
                     
                     cv.toBlob(function(blob){
                         if(!blob)return;
                         var file = new File([blob], 'hwacheon_'+Date.now()+'.png', {type:'image/png'});
+                        
+                        // 공유 기능 지원 여부 확인
                         if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+                            // 크롬, 사파리 등 일반 브라우저에서는 정상적으로 공유 메뉴 팝업
+                            document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;line-height:1.4;">카카오톡 공유 메뉴를 불러오는 중입니다...<br>(터치하면 창 닫힘)</span>';
+                            document.getElementById('sov-hint').style.display = 'block';
+                            
                             navigator.share({title:'화천군 파크골프', files:[file]})
                                 .then(function(){ closeSov(); showToast('공유 완료!'); })
-                                .catch(function(e){});
+                                .catch(function(e){ 
+                                    // 사용자가 공유를 취소했거나 오류 발생 시 안내 문구 변경
+                                    document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;line-height:1.4;">자동 공유가 취소되었습니다.<br>위 <b>이미지를 길게 눌러서</b> 저장/공유 하세요.<br>(터치하면 창 닫힘)</span>';
+                                });
+                        } else {
+                            // [핵심 변경점] 카카오톡 내장 브라우저 등 자동 공유가 막힌 환경에 대한 안내
+                            document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:14px;padding:12px 20px;border-radius:8px;line-height:1.5; display:inline-block;">⚠️ 카카오톡 내부 브라우저에서는<br>자동 공유가 막혀있습니다.<br><br>👇<br><b style="color:#FEE500; font-size:16px;">위 이미지를 꾹~ 길게 누르신 후<br>[공유] 또는 [이미지 저장]을 선택하세요!</b><br><br>(빈 화면을 터치하면 창이 닫힙니다)</span>';
+                            document.getElementById('sov-hint').style.display = 'block';
                         }
                     }, 'image/png');
                 }catch(err){ closeSov(); showToast('오류: '+err.message); }
