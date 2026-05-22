@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>화천군 파크골프장 (V16.1 카톡공유 개선)</title>
+    <title>화천군 파크골프장 (V16.1 카톡공유 완벽해결)</title>
+    
+    <script>
+        if (navigator.userAgent.match(/kakaotalk/i)) {
+            location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(location.href);
+        }
+    </script>
+
     <style>
         /* [라이트 모드] 화천군 테마 컬러 */
         :root { 
@@ -29,11 +36,7 @@
         .active { display: flex; }
         h1 { font-size: 18px; text-align: center; margin: 5px 0 10px 0; color: var(--primary-color); }
 
-        .main-photo-container {
-            width: 100%; height: auto; margin-bottom: 20px; border-radius: 15px;
-            overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3); background-color: transparent;
-            display: flex; justify-content: center;
-        }
+        .main-photo-container { width: 100%; height: auto; margin-bottom: 20px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3); background-color: transparent; display: flex; justify-content: center; }
         .main-photo { width: auto; height: auto; max-height: 40vh; object-fit: contain; border-radius: 15px; }
 
         .btn-large { width: 100%; padding: 14px; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer; background-color: var(--primary-color); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -41,35 +44,27 @@
         .btn-confirm { background-color: #d32f2f; color: white; animation: pulse 2s infinite; }
         .btn-outline { background-color: var(--btn-outline-bg); color: var(--btn-outline-text); border: 1px solid var(--table-border); }
         .btn-nav { background-color: #333; color: white; padding: 6px 10px; border-radius: 5px; border: none; font-size: 13px; }
-        
-        /* 공유 버튼 전용 스타일 */
         .btn-share { background-color: #FEE500; color: #3C1E1E; }
-        
         .btn-select { width:32%; padding:10px; background:var(--card-bg); border:1px solid var(--table-border); border-radius:5px; color: var(--text-color); font-weight:bold; }
         .btn-select.selected { background:var(--accent-color); border-color:var(--accent-color); color: white;}
-        
         input, select { width: 100%; padding: 10px; margin-bottom: 5px; border: 1px solid var(--table-border); border-radius: 5px; box-sizing: border-box; background-color: var(--card-bg); color: var(--text-color); font-weight:bold;}
         
         .hole-info-card { background-color: var(--card-bg); padding: 10px; border-radius: 10px; margin-bottom: 5px; text-align: center; border: 2px solid var(--primary-color); }
         .player-row { background-color: var(--card-bg); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        
         .score-control { display: flex; align-items: center; gap: 8px; }
         .score-display { font-size: 30px; font-weight: bold; width: 36px; text-align: center; color: var(--primary-color); }
         .btn-circle { width: 42px; height: 42px; border-radius: 50%; font-size: 22px; border: none; font-weight: bold; color: white; margin: 0; padding: 0;}
         .btn-minus { background-color: #2196f3; } .btn-plus { background-color: #f44336; }
-        
         .score-summary { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
         .score-val { font-weight: bold; color: var(--text-color); font-size: 13px; }
         .total-val { font-weight: bold; color: #d32f2f; font-size: 13px; }
 
         .search-bar { display: flex; gap: 5px; margin-bottom: 15px; background: var(--card-bg); padding: 10px; border-radius: 8px; }
         .history-card { background: var(--card-bg); border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border-left: 4px solid var(--primary-color); }
-        
         .table-container { overflow-x: auto; width: 100%; }
         .result-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; white-space: nowrap; margin-top: 8px; color: var(--text-color); }
         .result-table th { background-color: var(--table-header); padding: 8px 6px; border: 1px solid var(--table-border); } 
         .result-table td { padding: 8px 6px; border: 1px solid var(--table-border); }
-        
         .btn-delete-small { background-color: #d32f2f; color: white; border: none; border-radius: 4px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
@@ -81,8 +76,11 @@
         .modal-btn-ok { background-color: var(--primary-color); color: white; }
         
         /* 공유 화면 오버레이 스타일 */
-        #sov { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        #sov { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
         #sov div { background: transparent; padding: 0; font-size: 16px; font-weight: bold; color: #fff; text-align: center; }
+        
+        /* ★ [조치 2] 이미지 부분만 꾹 누르기(롱 터치) 허용하도록 강제 설정 ★ */
+        #sov-img { width:100%; max-width:400px; display:none; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); user-select: auto !important; -webkit-user-select: auto !important; -webkit-touch-callout: default !important; pointer-events: auto !important; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
         #toast-msg { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; left: 50%; bottom: 60px; transform: translateX(-50%); z-index: 3000; font-weight:bold; }
@@ -103,28 +101,23 @@
             <button class="btn-large btn-secondary" onclick="loadLastGame()">이어하기</button>
             <button id="theme-btn" class="btn-large" style="background-color: #333; color: #fff;" onclick="toggleTheme()">🌙 다크 모드 (배터리 절약)</button>
         </div>
-        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (화천 3대 구장 + 카톡 공유 개선)</div>
+        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (공유기능 개선판)</div>
     </div>
 
     <div id="screen-setup" class="screen">
         <h1>경기 설정</h1>
-        
         <h3 style="margin-bottom:5px;">1. 구장 선택</h3>
         <select id="park-select" onchange="updateCourseOptions()" style="margin-bottom:15px; font-size:16px;">
             <option value="산천어">🏞️ 산천어 파크골프장 (36홀)</option>
             <option value="사내">🌲 사내 파크골프장 (18홀)</option>
             <option value="생활체육">🏟️ 생활체육공원 파크골프장 (18홀)</option>
         </select>
-
         <h3 style="margin-bottom:5px;">2. 코스 선택</h3>
         <div id="course-options" style="display:flex; justify-content:space-between; margin-bottom:15px;"></div>
-
         <h3 style="margin-bottom:5px;">3. 시작 홀 (샷건)</h3>
         <select id="start-hole-select" style="margin-bottom:15px;"></select>
-        
         <h3 style="margin-bottom:5px;">4. 선수 이름</h3>
         <input type="text" id="p1"><input type="text" id="p2"><input type="text" id="p3"><input type="text" id="p4">
-        
         <div style="margin-top:auto;">
             <button class="btn-large btn-secondary" onclick="showScreen('screen-main')">취소</button>
             <button class="btn-large" onclick="startGame()">경기 시작 ▶</button>
@@ -203,9 +196,9 @@
     
     <div id="toast-msg">알림</div>
     
-    <div id="sov" onclick="closeSov()">
+    <div id="sov" onclick="closeSov(event)">
         <div id="sov-loading" style="padding:40px;">이미지 생성 중...</div>
-        <img id="sov-img" src="" style="width:100%; max-width:400px; display:none; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <img id="sov-img" src="">
         <div id="sov-hint" style="display:none; margin-top:20px;"></div>
     </div>
 
@@ -288,26 +281,17 @@
         function setupGame() {
             const lastNames = JSON.parse(localStorage.getItem('hwc_last_names') || '["나","김철수","이영희","박순자"]');
             ['p1','p2','p3','p4'].forEach((id,i) => document.getElementById(id).value = lastNames[i]);
-            
             document.getElementById('park-select').value = '산천어';
-            updateCourseOptions();
-            showScreen('screen-setup');
+            updateCourseOptions(); showScreen('screen-setup');
         }
 
         function updateCourseOptions() {
             currentPark = document.getElementById('park-select').value;
             const container = document.getElementById('course-options');
-            
             if(currentPark === '산천어') {
-                container.innerHTML = `
-                    <button class="btn-select selected" id="opt-AB" onclick="selectCourseMode('AB')">1구장(A+B)</button>
-                    <button class="btn-select" id="opt-CD" onclick="selectCourseMode('CD')">2구장(C+D)</button>
-                    <button class="btn-select" id="opt-ABCD" onclick="selectCourseMode('ABCD')" style="font-size:12px;">36홀(A~D)</button>
-                `;
+                container.innerHTML = `<button class="btn-select selected" id="opt-AB" onclick="selectCourseMode('AB')">1구장(A+B)</button><button class="btn-select" id="opt-CD" onclick="selectCourseMode('CD')">2구장(C+D)</button><button class="btn-select" id="opt-ABCD" onclick="selectCourseMode('ABCD')" style="font-size:12px;">36홀(A~D)</button>`;
             } else {
-                container.innerHTML = `
-                    <button class="btn-select selected" id="opt-AB" style="width:100%;" onclick="selectCourseMode('AB')">A+B 코스 (18홀)</button>
-                `;
+                container.innerHTML = `<button class="btn-select selected" id="opt-AB" style="width:100%;" onclick="selectCourseMode('AB')">A+B 코스 (18홀)</button>`;
             }
             selectCourseMode('AB');
         }
@@ -347,12 +331,10 @@
 
         function renderGameScreen() {
             const h = activeHoles[currentHoleIndex]; const maxScore = h.p * 2;
-            
             document.getElementById('game-park-title').innerText = currentPark + (currentPark === '산천어' ? '' : ' 공원');
             document.getElementById('progress-text').innerText = `${currentHoleIndex+1} / ${activeHoles.length}`;
             document.getElementById('hole-badge').innerText = `${h.c}코스 ${h.id}번 홀 (R${h.r})`;
             document.getElementById('hole-detail').innerText = `Par ${h.p} (${h.d}m)`;
-            
             const board = document.getElementById('score-board'); board.innerHTML = '';
             
             players.forEach((p, idx) => {
@@ -367,13 +349,8 @@
                 }
                 board.innerHTML += `
                 <div class="player-row">
-                    <div style="flex-grow:1;">
-                        <span style="font-size:18px; font-weight:bold;">${p.name}</span>
-                        <div class="score-summary">
-                            ${h.c}코스: <span class="score-val">${courseSum}</span> &nbsp;|&nbsp; 
-                            R${h.r}합계: <span class="score-val">${roundSum}</span><br>
-                            총합계: <span class="total-val">${total}</span>
-                        </div>
+                    <div style="flex-grow:1;"><span style="font-size:18px; font-weight:bold;">${p.name}</span>
+                        <div class="score-summary">${h.c}코스: <span class="score-val">${courseSum}</span> &nbsp;|&nbsp; R${h.r}합계: <span class="score-val">${roundSum}</span><br>총합계: <span class="total-val">${total}</span></div>
                     </div>
                     <div class="score-control">
                         <button class="btn-circle btn-minus" onclick="changeScore(${idx}, -1)">－</button>
@@ -382,19 +359,14 @@
                     </div>
                 </div>`;
             });
-
             isConfirmed = players[0].confirmed[currentHoleIndex];
             if(isConfirmed) { document.getElementById('btn-confirm').style.display = 'none'; document.getElementById('nav-buttons').style.display = 'flex'; }
             else { document.getElementById('btn-confirm').style.display = 'block'; document.getElementById('nav-buttons').style.display = 'none'; }
         }
 
         function changeScore(idx, delta) {
-            if(isConfirmed) { 
-                showModal("확정된 점수입니다.\n수정하시겠습니까?", true, () => {
-                    players.forEach(p => p.confirmed[currentHoleIndex] = false); isConfirmed = false;
-                    applyScore(idx, delta);
-                });
-            } else { applyScore(idx, delta); }
+            if(isConfirmed) { showModal("확정된 점수입니다.\n수정하시겠습니까?", true, () => { players.forEach(p => p.confirmed[currentHoleIndex] = false); isConfirmed = false; applyScore(idx, delta); }); } 
+            else { applyScore(idx, delta); }
         }
 
         function applyScore(idx, delta) {
@@ -403,23 +375,14 @@
             players[idx].scores[currentHoleIndex] = val; renderGameScreen();
         }
 
-        function confirmCurrentHole() { 
-            players.forEach(p => p.confirmed[currentHoleIndex] = true); isConfirmed = true; 
-            showToast("확정되었습니다."); renderGameScreen(); saveCurrentState(); 
-        }
+        function confirmCurrentHole() { players.forEach(p => p.confirmed[currentHoleIndex] = true); isConfirmed = true; showToast("확정되었습니다."); renderGameScreen(); saveCurrentState(); }
 
         function nextHole() {
             if (currentHoleIndex < activeHoles.length - 1) {
-                let currentHole = activeHoles[currentHoleIndex];
-                let nextHole = activeHoles[currentHoleIndex+1];
-                
+                let currentHole = activeHoles[currentHoleIndex]; let nextHole = activeHoles[currentHoleIndex+1];
                 if (currentHole.c !== nextHole.c || currentHole.r !== nextHole.r) {
                     let msg = `[ ${currentHole.c}코스 (R${currentHole.r}) 종료 ]\n\n`;
-                    players.forEach(p => { 
-                        let sum = 0; 
-                        activeHoles.forEach((hObj, i) => { if(hObj.c === currentHole.c && hObj.r === currentHole.r && p.confirmed[i]) sum += p.scores[i]; }); 
-                        msg += `${p.name}: ${sum}타\n`; 
-                    });
+                    players.forEach(p => { let sum = 0; activeHoles.forEach((hObj, i) => { if(hObj.c === currentHole.c && hObj.r === currentHole.r && p.confirmed[i]) sum += p.scores[i]; }); msg += `${p.name}: ${sum}타\n`; });
                     showModal(msg, false, () => { currentHoleIndex++; renderGameScreen(); });
                 } else { currentHoleIndex++; renderGameScreen(); }
             } else { showModal("모든 홀 경기가 끝났습니다.\n결과 화면으로 이동할까요?", true, () => { processFinishGame(); }); }
@@ -428,21 +391,13 @@
 
         function extendGame() {
             showModal("현재 점수를 유지한 채\n다음 라운드(연장전)를 시작할까요?", true, () => {
-                roundCount++; 
-                let holesPerRound = 0;
-                if(currentMode.includes('A')) holesPerRound += 9;
-                if(currentMode.includes('B')) holesPerRound += 9;
-                if(currentMode.includes('C')) holesPerRound += 9;
-                if(currentMode.includes('D')) holesPerRound += 9;
-
+                roundCount++; let holesPerRound = 0;
+                if(currentMode.includes('A')) holesPerRound += 9; if(currentMode.includes('B')) holesPerRound += 9;
+                if(currentMode.includes('C')) holesPerRound += 9; if(currentMode.includes('D')) holesPerRound += 9;
                 let baseSequence = activeHoles.slice(0, holesPerRound);
                 let newHoles = baseSequence.map(h => ({...h, r: roundCount})); 
-                
                 activeHoles = activeHoles.concat(newHoles);
-                players.forEach(p => { 
-                    p.scores = p.scores.concat(newHoles.map(h=>h.p)); 
-                    p.confirmed = p.confirmed.concat(new Array(newHoles.length).fill(false)); 
-                });
+                players.forEach(p => { p.scores = p.scores.concat(newHoles.map(h=>h.p)); p.confirmed = p.confirmed.concat(new Array(newHoles.length).fill(false)); });
                 currentHoleIndex++; isConfirmed = false; renderGameScreen(); showScreen('screen-game'); saveCurrentState();
             });
         }
@@ -455,26 +410,19 @@
                 if (key !== currentKey) { sections.push({ c: h.c, r: h.r, holes: [], startIndex: idx }); currentKey = key; }
                 sections[sections.length - 1].holes.push({ ...h, globalIdx: idx });
             });
-
             sections.forEach(sec => {
-                let html = `<div style="margin-bottom: 15px; background: var(--card-bg); padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">`;
-                html += `<h3 style="margin:0 0 10px 0; color:var(--primary-color); text-align:left;">⛳ ${sec.c}코스 (R${sec.r})</h3>`;
-                html += `<div class="table-container"><table class="result-table" style="margin:0;">`;
-                html += `<tr style="background-color:var(--table-header);"><th>Hole</th>`;
+                let html = `<div style="margin-bottom: 15px; background: var(--card-bg); padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"><h3 style="margin:0 0 10px 0; color:var(--primary-color); text-align:left;">⛳ ${sec.c}코스 (R${sec.r})</h3><div class="table-container"><table class="result-table" style="margin:0;"><tr style="background-color:var(--table-header);"><th>Hole</th>`;
                 sec.holes.forEach(h => { html += `<th onclick="jumpToHole(${h.globalIdx})" style="cursor:pointer; color:var(--primary-color); text-decoration:underline;">${h.id}</th>`; });
                 html += `<th style="background:var(--highlight-green);">합계</th></tr><tr><td style="color:var(--text-muted);">Par</td>`;
                 let parSum = sec.holes.reduce((sum, h) => sum + h.p, 0);
                 sec.holes.forEach(h => { html += `<td style="color:var(--text-muted);">${h.p}</td>`; });
                 html += `<td style="font-weight:bold;">${parSum}</td></tr>`;
-                
                 players.forEach(p => {
                     let pSum = 0; html += `<tr><td style="font-weight:bold;">${p.name}</td>`;
                     sec.holes.forEach(h => {
                         let s = p.scores[h.globalIdx]; let isConf = p.confirmed[h.globalIdx];
-                        if (isConf) {
-                            pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)');
-                            html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`;
-                        } else { html += `<td style="color:var(--table-border);">-</td>`; }
+                        if (isConf) { pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)'); html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`; } 
+                        else { html += `<td style="color:var(--table-border);">-</td>`; }
                     });
                     html += `<td style="font-weight:bold; background:var(--highlight-green); color:var(--primary-color);">${pSum}</td></tr>`;
                 });
@@ -484,119 +432,56 @@
 
         function jumpToHole(idx) { currentHoleIndex = idx; renderGameScreen(); showScreen('screen-game'); }
         function closeScoreboard() { showScreen('screen-game'); }
-
-        function finishGame(isEarlyEnd = false) {
-            if (isEarlyEnd) {
-                showModal("경기를 여기서 종료하고\n지금까지의 결과를 보시겠습니까?", true, () => { processFinishGame(); });
-            } else {
-                processFinishGame();
-            }
-        }
+        function finishGame(isEarlyEnd = false) { if (isEarlyEnd) { showModal("경기를 여기서 종료하고\n지금까지의 결과를 보시겠습니까?", true, () => { processFinishGame(); }); } else { processFinishGame(); } }
 
         function processFinishGame() {
-            document.getElementById('result-park-title').innerText = `🏆 경기 결과 [${currentPark}]`;
-            showScreen('screen-result');
-            
+            document.getElementById('result-park-title').innerText = `🏆 경기 결과 [${currentPark}]`; showScreen('screen-result');
             let playedCourses = [];
             if(currentMode.includes('A')) playedCourses.push('A'); if(currentMode.includes('B')) playedCourses.push('B');
             if(currentMode.includes('C')) playedCourses.push('C'); if(currentMode.includes('D')) playedCourses.push('D');
-
             let rounds = [];
-            for(let r=1; r<=roundCount; r++) {
-                let roundCourses = playedCourses.map(c => ({ c: c, r: r, label: `${c}(R${r})` }));
-                rounds.push({ r: r, courses: roundCourses });
-            }
+            for(let r=1; r<=roundCount; r++) { rounds.push({ r: r, courses: playedCourses.map(c => ({ c: c, r: r, label: `${c}(R${r})` })) }); }
 
             let html = `<thead><tr><th>이름</th>`;
-            rounds.forEach(rnd => {
-                rnd.courses.forEach(col => { html += `<th>${col.label}</th>`; });
-                html += `<th style="background:var(--highlight-blue);">R${rnd.r} 합계</th>`;
-            });
+            rounds.forEach(rnd => { rnd.courses.forEach(col => { html += `<th>${col.label}</th>`; }); html += `<th style="background:var(--highlight-blue);">R${rnd.r} 합계</th>`; });
             html += `<th style="background:var(--highlight-bg);">총합계</th></tr></thead><tbody>`;
 
             let ranked = players.map(p => {
                 let roundScores = {}; let colScores = {}; let total = 0;
                 rounds.forEach(rnd => { roundScores[rnd.r] = 0; rnd.courses.forEach(col => colScores[`${col.c}-${col.r}`] = 0); });
-                activeHoles.forEach((h, i) => { 
-                    if(p.confirmed[i]) { let key = `${h.c}-${h.r}`; colScores[key] += p.scores[i]; roundScores[h.r] += p.scores[i]; total += p.scores[i]; }
-                });
+                activeHoles.forEach((h, i) => { if(p.confirmed[i]) { let key = `${h.c}-${h.r}`; colScores[key] += p.scores[i]; roundScores[h.r] += p.scores[i]; total += p.scores[i]; } });
                 return { name: p.name, colScores, roundScores, total, rawScores: [...p.scores], rawConfirmed: [...p.confirmed] };
             }).sort((a,b)=>a.total - b.total);
 
             ranked.forEach((p, rank) => {
                 html += `<tr><td style="font-weight:bold;">${rank+1}위 ${p.name}</td>`;
-                rounds.forEach(rnd => {
-                    rnd.courses.forEach(col => { html += `<td>${p.colScores[`${col.c}-${col.r}`]}</td>`; });
-                    html += `<td style="font-weight:bold; background:var(--highlight-blue);">${p.roundScores[rnd.r]}</td>`;
-                });
+                rounds.forEach(rnd => { rnd.courses.forEach(col => { html += `<td>${p.colScores[`${col.c}-${col.r}`]}</td>`; }); html += `<td style="font-weight:bold; background:var(--highlight-blue);">${p.roundScores[rnd.r]}</td>`; });
                 html += `<td style="font-weight:bold; background:var(--highlight-bg); color:#f44336;">${p.total}</td></tr>`;
             });
-            html += `</tbody>`; 
-            document.getElementById('result-table').innerHTML = html; 
-            
-            _lastRanked = ranked; _lastRnds = rounds;
-            saveToHistory(ranked, rounds);
+            html += `</tbody>`; document.getElementById('result-table').innerHTML = html; 
+            _lastRanked = ranked; _lastRnds = rounds; saveToHistory(ranked, rounds);
         }
 
         function saveCurrentState() { localStorage.setItem('hwc_temp_save', JSON.stringify({ park: currentPark, mode:currentMode, activeHoles, players, idx:currentHoleIndex, date:gameDate, rc:roundCount })); }
-        function loadLastGame() { 
-            const data = JSON.parse(localStorage.getItem('hwc_temp_save')); 
-            if(!data) { showModal("저장된 게임 기록이 없습니다.", false); return; } 
-            currentPark = data.park || '산천어'; currentMode = data.mode; activeHoles = data.activeHoles; players = data.players; currentHoleIndex = data.idx; gameDate = data.date; roundCount = data.rc || 1; renderGameScreen(); showScreen('screen-game'); 
-        }
-        
-        function saveToHistory(rankedPlayers, rounds) { 
-            const holesCopy = JSON.parse(JSON.stringify(activeHoles));
-            const item = { id: Date.now(), date: gameDate, park: currentPark, mode: currentMode, rounds: rounds, players: rankedPlayers, activeHoles: holesCopy }; 
-            let list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); 
-            list.unshift(item); localStorage.setItem('hwc_history', JSON.stringify(list)); 
-        }
+        function loadLastGame() { const data = JSON.parse(localStorage.getItem('hwc_temp_save')); if(!data) { showModal("저장된 게임 기록이 없습니다.", false); return; } currentPark = data.park || '산천어'; currentMode = data.mode; activeHoles = data.activeHoles; players = data.players; currentHoleIndex = data.idx; gameDate = data.date; roundCount = data.rc || 1; renderGameScreen(); showScreen('screen-game'); }
+        function saveToHistory(rankedPlayers, rounds) { const holesCopy = JSON.parse(JSON.stringify(activeHoles)); const item = { id: Date.now(), date: gameDate, park: currentPark, mode: currentMode, rounds: rounds, players: rankedPlayers, activeHoles: holesCopy }; let list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); list.unshift(item); localStorage.setItem('hwc_history', JSON.stringify(list)); }
         function saveAndGoHome() { localStorage.removeItem('hwc_temp_save'); showScreen('screen-main'); }
         function showHistoryScreen() { showScreen('screen-history'); filterHistory(); }
-        
-        function deleteHistory(id) {
-            showModal("이 기록을 삭제하시겠습니까?", true, () => {
-                let list = JSON.parse(localStorage.getItem('hwc_history') || '[]');
-                list = list.filter(item => item.id !== id);
-                localStorage.setItem('hwc_history', JSON.stringify(list));
-                filterHistory(); showToast("삭제되었습니다.");
-            });
-        }
-
-        function deleteAllHistory() {
-            let list = JSON.parse(localStorage.getItem('hwc_history') || '[]');
-            if(list.length === 0) { showModal("삭제할 기록이 없습니다.", false); return; }
-            showModal("⚠️ 경고\n\n모든 기록을 정말로 삭제하시겠습니까?\n(이 작업은 되돌릴 수 없습니다!)", true, () => {
-                localStorage.removeItem('hwc_history');
-                filterHistory(); showToast("모든 기록이 삭제되었습니다.");
-            });
-        }
+        function deleteHistory(id) { showModal("이 기록을 삭제하시겠습니까?", true, () => { let list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); list = list.filter(item => item.id !== id); localStorage.setItem('hwc_history', JSON.stringify(list)); filterHistory(); showToast("삭제되었습니다."); }); }
+        function deleteAllHistory() { let list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); if(list.length === 0) { showModal("삭제할 기록이 없습니다.", false); return; } showModal("⚠️ 경고\n\n모든 기록을 정말로 삭제하시겠습니까?\n(이 작업은 되돌릴 수 없습니다!)", true, () => { localStorage.removeItem('hwc_history'); filterHistory(); showToast("모든 기록이 삭제되었습니다."); }); }
 
         function filterHistory() { 
-            const list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); 
-            const container = document.getElementById('history-list'); 
+            const list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); const container = document.getElementById('history-list'); 
             if(!list.length) { container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-weight:bold;">저장된 기록이 없습니다.</div>'; return; } 
-            
-            const sd = document.getElementById('search-date').value;
-            const sn = document.getElementById('search-name').value.trim().toLowerCase();
+            const sd = document.getElementById('search-date').value; const sn = document.getElementById('search-name').value.trim().toLowerCase();
             let filteredList = list;
-            if(sd) filteredList = filteredList.filter(g => g.date === sd);
-            if(sn) filteredList = filteredList.filter(g => g.players && g.players.some(p => p.name.toLowerCase().includes(sn)));
-
+            if(sd) filteredList = filteredList.filter(g => g.date === sd); if(sn) filteredList = filteredList.filter(g => g.players && g.players.some(p => p.name.toLowerCase().includes(sn)));
             container.innerHTML = filteredList.map(g => { 
                 let pName = g.park || '산천어';
-                let headerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                    <div onclick="viewPastScorecard(${g.id})" style="cursor:pointer; color:var(--primary-color); text-decoration:underline; font-weight:bold; font-size:15px;">
-                                        📅 ${g.date} [${pName}] (${g.mode}) 🔍
-                                    </div>
-                                    <button class="btn-delete-small" onclick="deleteHistory(${g.id})">삭제</button>
-                                  </div>`;
+                let headerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div onclick="viewPastScorecard(${g.id})" style="cursor:pointer; color:var(--primary-color); text-decoration:underline; font-weight:bold; font-size:15px;">📅 ${g.date} [${pName}] (${g.mode}) 🔍</div><button class="btn-delete-small" onclick="deleteHistory(${g.id})">삭제</button></div>`;
                 if (g.rounds) { 
                     let ths = ''; g.rounds.forEach(rnd => { rnd.courses.forEach(col => { ths += `<th>${col.label}</th>`; }); ths += `<th style="background:var(--highlight-blue);">R${rnd.r} 합계</th>`; });
-                    let rows = g.players.map(p => { 
-                        let tds = ''; g.rounds.forEach(rnd => { rnd.courses.forEach(col => { tds += `<td>${p.colScores[`${col.c}-${col.r}`]}</td>`; }); tds += `<td style="font-weight:bold; background:var(--highlight-blue);">${p.roundScores[rnd.r]}</td>`; });
-                        return `<tr><td>${p.name}</td>${tds}<td><b style="color:#f44336;">${p.total}</b></td></tr>`; 
-                    }).join(''); 
+                    let rows = g.players.map(p => { let tds = ''; g.rounds.forEach(rnd => { rnd.courses.forEach(col => { tds += `<td>${p.colScores[`${col.c}-${col.r}`]}</td>`; }); tds += `<td style="font-weight:bold; background:var(--highlight-blue);">${p.roundScores[rnd.r]}</td>`; }); return `<tr><td>${p.name}</td>${tds}<td><b style="color:#f44336;">${p.total}</b></td></tr>`; }).join(''); 
                     return `<div class="history-card">${headerHTML}<div class="table-container"><table class="result-table"><tr><th>이름</th>${ths}<th>총합</th></tr>${rows}</table></div></div>`; 
                 } else { 
                     let rows = g.players.map(p => `<tr><td>${p.name}</td><td><b style="color:#f44336;">${p.total}</b></td></tr>`).join(''); 
@@ -606,60 +491,23 @@
         }
 
         function viewPastScorecard(id) {
-            _currentPastId = id; 
-            const list = JSON.parse(localStorage.getItem('hwc_history') || '[]');
-            const g = list.find(item => item.id === id);
-            if (!g) return;
-            
-            if (!g.activeHoles || !g.players[0].rawScores) {
-                showModal("이전 버전에서 저장된 기록이라\n상세 스코어카드 정보가\n존재하지 않습니다.", false);
-                return;
-            }
-
-            const container = document.getElementById('past-grid-container');
-            container.innerHTML = '';
-            
+            _currentPastId = id; const list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); const g = list.find(item => item.id === id); if (!g) return;
+            if (!g.activeHoles || !g.players[0].rawScores) { showModal("이전 버전에서 저장된 기록이라\n상세 스코어카드 정보가\n존재하지 않습니다.", false); return; }
+            const container = document.getElementById('past-grid-container'); container.innerHTML = '';
             let sections = []; let currentKey = '';
-            g.activeHoles.forEach((h, idx) => {
-                let key = `${h.c}-${h.r}`;
-                if (key !== currentKey) { sections.push({ c: h.c, r: h.r, holes: [], startIndex: idx }); currentKey = key; }
-                sections[sections.length - 1].holes.push({ ...h, globalIdx: idx });
-            });
-
+            g.activeHoles.forEach((h, idx) => { let key = `${h.c}-${h.r}`; if (key !== currentKey) { sections.push({ c: h.c, r: h.r, holes: [], startIndex: idx }); currentKey = key; } sections[sections.length - 1].holes.push({ ...h, globalIdx: idx }); });
             sections.forEach(sec => {
-                let html = `<div style="margin-bottom: 15px; background: var(--card-bg); padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">`;
-                html += `<h3 style="margin:0 0 10px 0; color:var(--primary-color); text-align:left;">⛳ ${sec.c}코스 (R${sec.r})</h3>`;
-                html += `<div class="table-container"><table class="result-table" style="margin:0;">`;
-                html += `<tr style="background-color:var(--table-header);"><th>Hole</th>`;
-                
-                sec.holes.forEach(h => { html += `<th>${h.id}</th>`; });
-                html += `<th style="background:var(--highlight-green);">합계</th></tr><tr><td style="color:var(--text-muted);">Par</td>`;
-                
-                let parSum = sec.holes.reduce((sum, h) => sum + h.p, 0);
-                sec.holes.forEach(h => { html += `<td style="color:var(--text-muted);">${h.p}</td>`; });
-                html += `<td style="font-weight:bold;">${parSum}</td></tr>`;
-                
+                let html = `<div style="margin-bottom: 15px; background: var(--card-bg); padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"><h3 style="margin:0 0 10px 0; color:var(--primary-color); text-align:left;">⛳ ${sec.c}코스 (R${sec.r})</h3><div class="table-container"><table class="result-table" style="margin:0;"><tr style="background-color:var(--table-header);"><th>Hole</th>`;
+                sec.holes.forEach(h => { html += `<th>${h.id}</th>`; }); html += `<th style="background:var(--highlight-green);">합계</th></tr><tr><td style="color:var(--text-muted);">Par</td>`;
+                let parSum = sec.holes.reduce((sum, h) => sum + h.p, 0); sec.holes.forEach(h => { html += `<td style="color:var(--text-muted);">${h.p}</td>`; }); html += `<td style="font-weight:bold;">${parSum}</td></tr>`;
                 g.players.forEach(p => {
                     let pSum = 0; html += `<tr><td style="font-weight:bold;">${p.name}</td>`;
-                    sec.holes.forEach(h => {
-                        let s = p.rawScores[h.globalIdx]; 
-                        let isConf = p.rawConfirmed[h.globalIdx];
-                        if (isConf) {
-                            pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)');
-                            html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`;
-                        } else { html += `<td style="color:var(--table-border);">-</td>`; }
-                    });
+                    sec.holes.forEach(h => { let s = p.rawScores[h.globalIdx]; let isConf = p.rawConfirmed[h.globalIdx]; if (isConf) { pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)'); html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`; } else { html += `<td style="color:var(--table-border);">-</td>`; } });
                     html += `<td style="font-weight:bold; background:var(--highlight-green); color:var(--primary-color);">${pSum}</td></tr>`;
-                });
-                html += `</table></div></div>`; container.innerHTML += html;
-            }); 
-            
-            showScreen('screen-past-scoreboard');
+                }); html += `</table></div></div>`; container.innerHTML += html;
+            }); showScreen('screen-past-scoreboard');
         }
 
-        /* ════════════════════════════════════════════════════════
-           공유 시스템 (카카오톡 내장 브라우저 우회 로직 포함)
-           ════════════════════════════════════════════════════════ */
         function localDateKr(){var d=new Date();return d.getFullYear()+'. '+String(d.getMonth()+1)+'. '+String(d.getDate())+'. ';}
         function sClr(s,par){if(s<par)return'#1565c0';if(s>par)return'#c62828';return'#333333';}
 
@@ -675,201 +523,131 @@
                     var maxC = 1;
                     secs.forEach(function(sec){ sec.rows.forEach(function(r){if(r.length>maxC)maxC=r.length;}); });
                     var W = P + NW + (maxC-1)*CW + P;
+                    var y = HD; secs.forEach(function(sec){ if(sec.title) y += SH; y += sec.rows.length * RH; y += 4*S; });
+                    var footerH = 16*S; var H = y + footerH;
                     
-                    var y = HD;
-                    secs.forEach(function(sec){ if(sec.title) y += SH; y += sec.rows.length * RH; y += 4*S; });
-                    var footerH = 16*S;
-                    var H = y + footerH;
+                    var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var ctx = cv.getContext('2d');
                     
-                    var cv = document.createElement('canvas');
-                    cv.width = W; cv.height = H;
-                    var ctx = cv.getContext('2d');
-                    
-                    ctx.fillStyle = '#f0f7f7'; ctx.fillRect(0,0,W,H);
-                    ctx.fillStyle = '#00796b'; ctx.fillRect(0,0,W,HD);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold '+(12*S)+'px sans-serif';
-                    ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+                    ctx.fillStyle = '#f0f7f7'; ctx.fillRect(0,0,W,H); ctx.fillStyle = '#00796b'; ctx.fillRect(0,0,W,HD); ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold '+(12*S)+'px sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
                     ctx.fillText('화천군 파크골프 ' + label + (dateStr ? ' ('+dateStr+')' : ''), P, HD/2);
                     
                     var ry = HD;
                     secs.forEach(function(sec){
-                        if(sec.title){
-                            ctx.fillStyle = '#004d40';
-                            ctx.font = 'bold '+(9*S)+'px sans-serif';
-                            ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-                            ctx.fillText(sec.title, P, ry+SH/2);
-                            ry += SH;
-                        }
+                        if(sec.title){ ctx.fillStyle = '#004d40'; ctx.font = 'bold '+(9*S)+'px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(sec.title, P, ry+SH/2); ry += SH; }
                         sec.rows.forEach(function(row, ri){
                             var isH = (ri===0);
                             row.forEach(function(cell, ci){
-                                var x = P + (ci===0 ? 0 : NW + (ci-1)*CW);
-                                var w = (ci===0) ? NW : CW;
-                                var bg = cell.bg || '';
-                                if(!bg){
-                                    if(isH) bg = '#b2dfdb';
-                                    else if(cell.text==='-') bg = '#eeeeee';
-                                    else bg = (ri%2===0 ? '#f9f9f9' : '#ffffff');
-                                }
-                                ctx.fillStyle = bg; ctx.fillRect(x,ry,w,RH);
-                                ctx.strokeStyle = '#cccccc'; ctx.lineWidth = 0.5*S; ctx.strokeRect(x,ry,w,RH);
-                                
-                                var fc = cell.color || '';
-                                if(!fc){
-                                    if(isH) fc = '#004d40';
-                                    else if(cell.text==='-') fc = '#aaaaaa';
-                                    else fc = '#222222';
-                                }
-                                ctx.fillStyle = fc;
-                                ctx.font = ((cell.bold||isH)?'bold ':'') + FN + 'px sans-serif';
-                                ctx.textBaseline = 'middle';
-                                ctx.textAlign = (ci===0) ? 'left' : 'center';
-                                var tx = (ci===0) ? x+4*S : x+w/2;
-                                ctx.save(); ctx.beginPath(); ctx.rect(x+1,ry+1,w-2,RH-2); ctx.clip();
-                                ctx.fillText(String(cell.text||''), tx, ry+RH/2);
-                                ctx.restore();
-                            });
-                            ry += RH;
-                        });
-                        ry += 4*S;
+                                var x = P + (ci===0 ? 0 : NW + (ci-1)*CW); var w = (ci===0) ? NW : CW; var bg = cell.bg || '';
+                                if(!bg){ if(isH) bg = '#b2dfdb'; else if(cell.text==='-') bg = '#eeeeee'; else bg = (ri%2===0 ? '#f9f9f9' : '#ffffff'); }
+                                ctx.fillStyle = bg; ctx.fillRect(x,ry,w,RH); ctx.strokeStyle = '#cccccc'; ctx.lineWidth = 0.5*S; ctx.strokeRect(x,ry,w,RH);
+                                var fc = cell.color || ''; if(!fc){ if(isH) fc = '#004d40'; else if(cell.text==='-') fc = '#aaaaaa'; else fc = '#222222'; }
+                                ctx.fillStyle = fc; ctx.font = ((cell.bold||isH)?'bold ':'') + FN + 'px sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = (ci===0) ? 'left' : 'center';
+                                var tx = (ci===0) ? x+4*S : x+w/2; ctx.save(); ctx.beginPath(); ctx.rect(x+1,ry+1,w-2,RH-2); ctx.clip(); ctx.fillText(String(cell.text||''), tx, ry+RH/2); ctx.restore();
+                            }); ry += RH;
+                        }); ry += 4*S;
                     });
                     
-                    ctx.fillStyle = '#888888'; ctx.font = (7*S)+'px sans-serif';
-                    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#888888'; ctx.font = (7*S)+'px sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
                     ctx.fillText(localDateKr() + '화천군 파크골프 V16.1', W-P, ry+footerH/2);
                     
                     var dataUrl = cv.toDataURL('image/png');
                     document.getElementById('sov-loading').style.display = 'none';
-                    
                     var img = document.getElementById('sov-img');
                     img.src = dataUrl; img.style.display = 'block';
                     
+                    // [핵심 변경점] 자동 공유 시도 후, 실패하거나 카카오톡 환경이면 다운로드 안내 버튼 제공
                     cv.toBlob(function(blob){
                         if(!blob)return;
                         var file = new File([blob], 'hwacheon_'+Date.now()+'.png', {type:'image/png'});
                         
-                        // 공유 기능 지원 여부 확인
                         if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-                            // 크롬, 사파리 등 일반 브라우저에서는 정상적으로 공유 메뉴 팝업
-                            document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;line-height:1.4;">카카오톡 공유 메뉴를 불러오는 중입니다...<br>(터치하면 창 닫힘)</span>';
+                            document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;">공유 메뉴를 띄웁니다...</span>';
                             document.getElementById('sov-hint').style.display = 'block';
-                            
                             navigator.share({title:'화천군 파크골프', files:[file]})
                                 .then(function(){ closeSov(); showToast('공유 완료!'); })
                                 .catch(function(e){ 
-                                    // 사용자가 공유를 취소했거나 오류 발생 시 안내 문구 변경
-                                    document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;line-height:1.4;">자동 공유가 취소되었습니다.<br>위 <b>이미지를 길게 눌러서</b> 저장/공유 하세요.<br>(터치하면 창 닫힘)</span>';
+                                    showFallbackUI(); // 공유 취소/실패 시 롱터치 및 다운로드 버튼 제공
                                 });
                         } else {
-                            // [핵심 변경점] 카카오톡 내장 브라우저 등 자동 공유가 막힌 환경에 대한 안내
-                            document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:14px;padding:12px 20px;border-radius:8px;line-height:1.5; display:inline-block;">⚠️ 카카오톡 내부 브라우저에서는<br>자동 공유가 막혀있습니다.<br><br>👇<br><b style="color:#FEE500; font-size:16px;">위 이미지를 꾹~ 길게 누르신 후<br>[공유] 또는 [이미지 저장]을 선택하세요!</b><br><br>(빈 화면을 터치하면 창이 닫힙니다)</span>';
-                            document.getElementById('sov-hint').style.display = 'block';
+                            showFallbackUI();
                         }
                     }, 'image/png');
                 }catch(err){ closeSov(); showToast('오류: '+err.message); }
             }, 50);
         }
 
+        function showFallbackUI() {
+            document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:14px;padding:12px 20px;border-radius:8px;line-height:1.5; display:inline-block; margin-bottom:15px;">⚠️ 카카오톡 보안 정책으로 자동 공유가 제한됩니다.<br><br>👇<br><b style="color:#FEE500; font-size:16px;">위 이미지를 꾹~ 길게 누르신 후<br>[공유] 또는 [이미지 저장]을 선택하세요!</b></span><br><button onclick="downloadFallbackImage(event)" style="padding:12px 24px; background:#FEE500; color:#3C1E1E; border:none; border-radius:8px; font-weight:bold; font-size:16px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3);">📥 내 폰에 바로 저장하기</button><br><span style="font-size:13px; margin-top:15px; display:block; color:#ccc;">(빈 배경을 터치하면 창이 닫힙니다)</span>';
+            document.getElementById('sov-hint').style.display = 'block';
+        }
+
+        // [조치 2] 직접 다운로드 함수
+        function downloadFallbackImage(e) {
+            e.stopPropagation(); // 오버레이 닫힘 방지
+            var img = document.getElementById('sov-img');
+            var a = document.createElement('a');
+            a.href = img.src;
+            a.download = 'parkgolf_score_' + Date.now() + '.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('이미지가 기기에 저장되었습니다.');
+        }
+
         function shareResult(){
             if(!_lastRanked || !_lastRnds){showToast('결과 데이터가 없습니다.');return;}
-            var rows = [];
-            var hdr = [{text:'이름',color:'#00796b',bold:true,bg:'#e0f2f1'}];
-            _lastRnds.forEach(function(rnd){
-                rnd.courses.forEach(function(col){hdr.push({text:col.label,color:'#00796b',bold:true,bg:'#e0f2f1'});});
-                hdr.push({text:'R'+rnd.r+'합계',color:'#00695c',bold:true,bg:'#b2dfdb'});
-            });
-            hdr.push({text:'총합',color:'#bf360c',bold:true,bg:'#ffe0b2'});
-            rows.push(hdr);
-            
+            var rows = []; var hdr = [{text:'이름',color:'#00796b',bold:true,bg:'#e0f2f1'}];
+            _lastRnds.forEach(function(rnd){ rnd.courses.forEach(function(col){hdr.push({text:col.label,color:'#00796b',bold:true,bg:'#e0f2f1'});}); hdr.push({text:'R'+rnd.r+'합계',color:'#00695c',bold:true,bg:'#b2dfdb'}); });
+            hdr.push({text:'총합',color:'#bf360c',bold:true,bg:'#ffe0b2'}); rows.push(hdr);
             _lastRanked.forEach(function(p, rk){
                 var cells = [{text:(rk+1)+'위 '+p.name,color:'#111111',bold:true,bg:''}];
-                _lastRnds.forEach(function(rnd){
-                    rnd.courses.forEach(function(col){
-                        cells.push({text:String(p.colScores[`${col.c}-${col.r}`]||0),color:'#333333',bold:true,bg:''});
-                    });
-                    cells.push({text:String(p.roundScores[rnd.r]||0),color:'#00695c',bold:true,bg:'#e0f2f1'});
-                });
-                cells.push({text:String(p.total||0),color:'#c62828',bold:true,bg:'#fff3e0'});
-                rows.push(cells);
+                _lastRnds.forEach(function(rnd){ rnd.courses.forEach(function(col){ cells.push({text:String(p.colScores[`${col.c}-${col.r}`]||0),color:'#333333',bold:true,bg:''}); }); cells.push({text:String(p.roundScores[rnd.r]||0),color:'#00695c',bold:true,bg:'#e0f2f1'}); });
+                cells.push({text:String(p.total||0),color:'#c62828',bold:true,bg:'#fff3e0'}); rows.push(cells);
             });
             drawCanvas([{title:'', rows:rows}], `[${currentPark}] 경기결과`, gameDate);
         }
 
         function shareHistoryList(){
-            var list = JSON.parse(localStorage.getItem('hwc_history') || '[]');
-            var sd = document.getElementById('search-date').value;
-            var sn = document.getElementById('search-name').value.trim().toLowerCase();
-            if(sd) list = list.filter(function(g){return g.date===sd;});
-            if(sn) list = list.filter(function(g){return g.players&&g.players.some(function(p){return p.name.toLowerCase().includes(sn);});});
+            var list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); var sd = document.getElementById('search-date').value; var sn = document.getElementById('search-name').value.trim().toLowerCase();
+            if(sd) list = list.filter(function(g){return g.date===sd;}); if(sn) list = list.filter(function(g){return g.players&&g.players.some(function(p){return p.name.toLowerCase().includes(sn);});});
             if(!list.length){showToast('공유할 기록이 없습니다.');return;}
-            
             var secs = [];
             list.forEach(function(g){
-                if(!g.rounds||!g.players||!g.players.length)return;
-                var rows = [];
-                var hdr = [{text:'이름',color:'#00796b',bold:true,bg:'#e0f2f1'}];
-                g.rounds.forEach(function(rnd){
-                    rnd.courses.forEach(function(col){hdr.push({text:col.label,color:'#00796b',bold:true,bg:'#e0f2f1'});});
-                    hdr.push({text:'R'+rnd.r+'합계',color:'#00695c',bold:true,bg:'#b2dfdb'});
-                });
-                hdr.push({text:'총합',color:'#bf360c',bold:true,bg:'#ffe0b2'});
-                rows.push(hdr);
-                
+                if(!g.rounds||!g.players||!g.players.length)return; var rows = []; var hdr = [{text:'이름',color:'#00796b',bold:true,bg:'#e0f2f1'}];
+                g.rounds.forEach(function(rnd){ rnd.courses.forEach(function(col){hdr.push({text:col.label,color:'#00796b',bold:true,bg:'#e0f2f1'});}); hdr.push({text:'R'+rnd.r+'합계',color:'#00695c',bold:true,bg:'#b2dfdb'}); });
+                hdr.push({text:'총합',color:'#bf360c',bold:true,bg:'#ffe0b2'}); rows.push(hdr);
                 g.players.forEach(function(p){
                     var cells = [{text:p.name,color:'#111111',bold:false,bg:''}];
-                    g.rounds.forEach(function(rnd){
-                        rnd.courses.forEach(function(col){
-                            var v = p.colScores&&p.colScores[`${col.c}-${col.r}`]!==undefined ? p.colScores[`${col.c}-${col.r}`] : 0;
-                            cells.push({text:String(v),color:'#333333',bold:false,bg:''});
-                        });
-                        var rv = p.roundScores&&p.roundScores[rnd.r]!==undefined ? p.roundScores[rnd.r] : 0;
-                        cells.push({text:String(rv),color:'#00695c',bold:true,bg:'#e0f2f1'});
-                    });
-                    cells.push({text:String(p.total||0),color:'#c62828',bold:true,bg:'#fff3e0'});
-                    rows.push(cells);
-                });
-                secs.push({title: g.date+' ['+(g.park||'산천어')+'] ('+g.mode+')', rows:rows});
+                    g.rounds.forEach(function(rnd){ rnd.courses.forEach(function(col){ var v = p.colScores&&p.colScores[`${col.c}-${col.r}`]!==undefined ? p.colScores[`${col.c}-${col.r}`] : 0; cells.push({text:String(v),color:'#333333',bold:false,bg:''}); }); var rv = p.roundScores&&p.roundScores[rnd.r]!==undefined ? p.roundScores[rnd.r] : 0; cells.push({text:String(rv),color:'#00695c',bold:true,bg:'#e0f2f1'}); });
+                    cells.push({text:String(p.total||0),color:'#c62828',bold:true,bg:'#fff3e0'}); rows.push(cells);
+                }); secs.push({title: g.date+' ['+(g.park||'산천어')+'] ('+g.mode+')', rows:rows});
             });
             drawCanvas(secs, '기록조회', localDateKr());
         }
 
         function sharePastScorecard(){
             if(!_currentPastId){showToast('먼저 기록을 선택해 주세요.');return;}
-            var list = JSON.parse(localStorage.getItem('hwc_history') || '[]');
-            var g = list.find(function(x){return x.id===_currentPastId;});
+            var list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); var g = list.find(function(x){return x.id===_currentPastId;});
             if(!g||!g.activeHoles||!g.players||!g.players[0].rawScores){showToast('상세 데이터가 없습니다.');return;}
-            
-            var holesMap = []; var key = '';
-            g.activeHoles.forEach(function(h,idx){var k=h.c+'-'+h.r; if(k!==key){holesMap.push({c:h.c,r:h.r,holes:[]});key=k;} holesMap[holesMap.length-1].holes.push({p:h.p,d:h.d,id:h.id,c:h.c,r:h.r,gi:idx});});
-            
+            var holesMap = []; var key = ''; g.activeHoles.forEach(function(h,idx){var k=h.c+'-'+h.r; if(k!==key){holesMap.push({c:h.c,r:h.r,holes:[]});key=k;} holesMap[holesMap.length-1].holes.push({p:h.p,d:h.d,id:h.id,c:h.c,r:h.r,gi:idx});});
             var secs = [];
             holesMap.forEach(function(sec){
-                var rows = [];
-                var hdr = [{text:'Hole',color:'#00796b',bold:true,bg:'#e0f2f1'}];
-                sec.holes.forEach(function(h){hdr.push({text:String(h.id),color:'#00796b',bold:true,bg:'#e0f2f1'});});
-                hdr.push({text:'합계',color:'#00796b',bold:true,bg:'#b2dfdb'});
-                rows.push(hdr);
-                
-                var pr = [{text:'Par',color:'#777777',bold:false,bg:'#f5f5f5'}]; var ps=0;
-                sec.holes.forEach(function(h){ps+=h.p; pr.push({text:String(h.p),color:'#777777',bold:false,bg:'#f5f5f5'});});
-                pr.push({text:String(ps),color:'#444444',bold:true,bg:'#eeeeee'}); rows.push(pr);
-                
+                var rows = []; var hdr = [{text:'Hole',color:'#00796b',bold:true,bg:'#e0f2f1'}];
+                sec.holes.forEach(function(h){hdr.push({text:String(h.id),color:'#00796b',bold:true,bg:'#e0f2f1'});}); hdr.push({text:'합계',color:'#00796b',bold:true,bg:'#b2dfdb'}); rows.push(hdr);
+                var pr = [{text:'Par',color:'#777777',bold:false,bg:'#f5f5f5'}]; var ps=0; sec.holes.forEach(function(h){ps+=h.p; pr.push({text:String(h.p),color:'#777777',bold:false,bg:'#f5f5f5'});}); pr.push({text:String(ps),color:'#444444',bold:true,bg:'#eeeeee'}); rows.push(pr);
                 g.players.forEach(function(p){
                     var sm=0; var cells = [{text:p.name,color:'#111111',bold:true,bg:''}];
-                    sec.holes.forEach(function(h){
-                        var s = p.rawScores[h.gi], conf = p.rawConfirmed[h.gi];
-                        if(conf&&s!==undefined){sm+=s; cells.push({text:String(s),color:sClr(s,h.p),bold:true,bg:''});}
-                        else{cells.push({text:'-',color:'#aaaaaa',bold:false,bg:'#f0f0f0'});}
-                    });
+                    sec.holes.forEach(function(h){ var s = p.rawScores[h.globalIdx], conf = p.rawConfirmed[h.globalIdx]; if(conf&&s!==undefined){sm+=s; cells.push({text:String(s),color:sClr(s,h.p),bold:true,bg:''});} else{cells.push({text:'-',color:'#aaaaaa',bold:false,bg:'#f0f0f0'});} });
                     cells.push({text:String(sm),color:'#00796b',bold:true,bg:'#e8f5e9'}); rows.push(cells);
-                });
-                secs.push({title: sec.c+'코스 (R'+sec.r+')', rows:rows});
+                }); secs.push({title: sec.c+'코스 (R'+sec.r+')', rows:rows});
             });
             drawCanvas(secs, `[${g.park||'산천어'}] 상세표`, g.date);
         }
 
-        function closeSov(){
+        // 오버레이 클릭 시 창 닫기 (버튼 클릭 등은 예외 처리)
+        function closeSov(e){
+            if(e && e.target.tagName.toLowerCase() === 'button') return;
             document.getElementById('sov').style.display='none';
             document.getElementById('sov-img').src='';
             document.getElementById('sov-hint').style.display='none';
