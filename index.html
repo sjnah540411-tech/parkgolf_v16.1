@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>화천군 파크골프장 (V16.1 카톡공유 완벽해결)</title>
+    <title>화천군 파크골프장 (V16.1 상세표 완벽수정)</title>
     
     <script>
         if (navigator.userAgent.match(/kakaotalk/i)) {
@@ -78,8 +78,6 @@
         /* 공유 화면 오버레이 스타일 */
         #sov { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
         #sov div { background: transparent; padding: 0; font-size: 16px; font-weight: bold; color: #fff; text-align: center; }
-        
-        /* ★ [조치 2] 이미지 부분만 꾹 누르기(롱 터치) 허용하도록 강제 설정 ★ */
         #sov-img { width:100%; max-width:400px; display:none; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); user-select: auto !important; -webkit-user-select: auto !important; -webkit-touch-callout: default !important; pointer-events: auto !important; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
@@ -101,7 +99,7 @@
             <button class="btn-large btn-secondary" onclick="loadLastGame()">이어하기</button>
             <button id="theme-btn" class="btn-large" style="background-color: #333; color: #fff;" onclick="toggleTheme()">🌙 다크 모드 (배터리 절약)</button>
         </div>
-        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (상세표 이미지 오류 수정됨)</div>
+        <div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:10px;">Ver 16.1 (상세표 캐시/오류 완벽수정)</div>
     </div>
 
     <div id="screen-setup" class="screen">
@@ -490,21 +488,37 @@
             }).join(''); 
         }
 
+        // [완벽수정 포인트 1] 화면에 띄우는 상세표(HTML) - 옛날 기록도 에러 없이 띄움
         function viewPastScorecard(id) {
             _currentPastId = id; const list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); const g = list.find(item => item.id === id); if (!g) return;
             if (!g.activeHoles || !g.players[0].rawScores) { showModal("이전 버전에서 저장된 기록이라\n상세 스코어카드 정보가\n존재하지 않습니다.", false); return; }
             const container = document.getElementById('past-grid-container'); container.innerHTML = '';
+            
             let sections = []; let currentKey = '';
-            g.activeHoles.forEach((h, idx) => { let key = `${h.c}-${h.r}`; if (key !== currentKey) { sections.push({ c: h.c, r: h.r, holes: [], startIndex: idx }); currentKey = key; } sections[sections.length - 1].holes.push({ ...h, globalIdx: idx }); });
+            g.activeHoles.forEach((h, idx) => { 
+                let key = `${h.c}-${h.r}`; 
+                if (key !== currentKey) { sections.push({ c: h.c, r: h.r, holes: [], startIndex: idx }); currentKey = key; } 
+                sections[sections.length - 1].holes.push({ ...h, globalIdx: idx }); 
+            });
+            
             sections.forEach(sec => {
                 let html = `<div style="margin-bottom: 15px; background: var(--card-bg); padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"><h3 style="margin:0 0 10px 0; color:var(--primary-color); text-align:left;">⛳ ${sec.c}코스 (R${sec.r})</h3><div class="table-container"><table class="result-table" style="margin:0;"><tr style="background-color:var(--table-header);"><th>Hole</th>`;
                 sec.holes.forEach(h => { html += `<th>${h.id}</th>`; }); html += `<th style="background:var(--highlight-green);">합계</th></tr><tr><td style="color:var(--text-muted);">Par</td>`;
                 let parSum = sec.holes.reduce((sum, h) => sum + h.p, 0); sec.holes.forEach(h => { html += `<td style="color:var(--text-muted);">${h.p}</td>`; }); html += `<td style="font-weight:bold;">${parSum}</td></tr>`;
+                
                 g.players.forEach(p => {
                     let pSum = 0; html += `<tr><td style="font-weight:bold;">${p.name}</td>`;
                     sec.holes.forEach(h => {
-                        let s = p.rawScores[h.globalIdx]; let isConf = p.rawConfirmed[h.globalIdx];
-                        if (isConf) { pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)'); html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`; } 
+                        let s = p.rawScores ? p.rawScores[h.globalIdx] : undefined; 
+                        let isConf = true; // 강제 통과 플래그
+                        if(p.rawConfirmed && p.rawConfirmed[h.globalIdx] !== undefined) {
+                            isConf = p.rawConfirmed[h.globalIdx];
+                        }
+                        
+                        if (s !== undefined && isConf) { 
+                            pSum += s; let color = s < h.p ? '#2196f3' : (s > h.p ? '#f44336' : 'var(--text-color)'); 
+                            html += `<td><span style="color:${color}; font-weight:bold;">${s}</span></td>`; 
+                        } 
                         else { html += `<td style="color:var(--table-border);">-</td>`; }
                     });
                     html += `<td style="font-weight:bold; background:var(--highlight-green); color:var(--primary-color);">${pSum}</td></tr>`;
@@ -564,15 +578,12 @@
                     cv.toBlob(function(blob){
                         if(!blob)return;
                         var file = new File([blob], 'hwacheon_'+Date.now()+'.png', {type:'image/png'});
-                        
                         if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
                             document.getElementById('sov-hint').innerHTML = '<span style="background:rgba(0,0,0,0.8);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;">공유 메뉴를 띄웁니다...</span>';
                             document.getElementById('sov-hint').style.display = 'block';
                             navigator.share({title:'화천군 파크골프', files:[file]})
                                 .then(function(){ closeSov(); showToast('공유 완료!'); })
-                                .catch(function(e){ 
-                                    showFallbackUI(); 
-                                });
+                                .catch(function(e){ showFallbackUI(); });
                         } else {
                             showFallbackUI();
                         }
@@ -629,22 +640,21 @@
             drawCanvas(secs, '기록조회', localDateKr());
         }
 
-        // --- 상세표 이미지 생성 부분 (오류 수정 완료) ---
+        // [완벽수정 포인트 2] 카톡용 상세 이미지 만들기 - 옛날 기록도 에러 없이 만듦
         function sharePastScorecard(){
             if(!_currentPastId){showToast('먼저 기록을 선택해 주세요.');return;}
             var list = JSON.parse(localStorage.getItem('hwc_history') || '[]'); var g = list.find(function(x){return x.id===_currentPastId;});
             if(!g||!g.activeHoles||!g.players||!g.players[0].rawScores){showToast('상세 데이터가 없습니다.');return;}
             
-            var holesMap = []; var key = ''; 
-            // 홀 데이터를 추출할 때 gi: idx 로 저장합니다.
+            var sections = []; var currentKey = ''; 
             g.activeHoles.forEach(function(h,idx){
-                var k=h.c+'-'+h.r; 
-                if(k!==key){holesMap.push({c:h.c,r:h.r,holes:[]});key=k;} 
-                holesMap[holesMap.length-1].holes.push({p:h.p,d:h.d,id:h.id,c:h.c,r:h.r,gi:idx});
+                var key=h.c+'-'+h.r; 
+                if(key!==currentKey){sections.push({c:h.c,r:h.r,holes:[]});currentKey=key;} 
+                sections[sections.length-1].holes.push({...h, globalIdx:idx});
             });
             
             var secs = [];
-            holesMap.forEach(function(sec){
+            sections.forEach(function(sec){
                 var rows = []; var hdr = [{text:'Hole',color:'#00796b',bold:true,bg:'#e0f2f1'}];
                 sec.holes.forEach(function(h){hdr.push({text:String(h.id),color:'#00796b',bold:true,bg:'#e0f2f1'});}); hdr.push({text:'합계',color:'#00796b',bold:true,bg:'#b2dfdb'}); rows.push(hdr);
                 
@@ -655,10 +665,17 @@
                 g.players.forEach(function(p){
                     var sm=0; var cells = [{text:p.name,color:'#111111',bold:true,bg:''}];
                     sec.holes.forEach(function(h){
-                        // [수정된 부분] h.globalIdx 대신, 위에서 저장한 h.gi 를 호출하여 점수를 정확히 불러옵니다.
-                        var s = p.rawScores[h.gi], conf = p.rawConfirmed[h.gi]; 
-                        if(conf&&s!==undefined){sm+=s; cells.push({text:String(s),color:sClr(s,h.p),bold:true,bg:''});} 
-                        else{cells.push({text:'-',color:'#aaaaaa',bold:false,bg:'#f0f0f0'});} 
+                        var s = p.rawScores ? p.rawScores[h.globalIdx] : undefined; 
+                        var conf = true; // 강제 통과 플래그
+                        if(p.rawConfirmed && p.rawConfirmed[h.globalIdx] !== undefined) {
+                            conf = p.rawConfirmed[h.globalIdx];
+                        }
+                        
+                        if(s !== undefined && conf){
+                            sm+=s; cells.push({text:String(s),color:sClr(s,h.p),bold:true,bg:''});
+                        } else {
+                            cells.push({text:'-',color:'#aaaaaa',bold:false,bg:'#f0f0f0'});
+                        } 
                     });
                     cells.push({text:String(sm),color:'#00796b',bold:true,bg:'#e8f5e9'}); rows.push(cells);
                 }); 
@@ -667,7 +684,6 @@
             drawCanvas(secs, `[${g.park||'산천어'}] 상세표`, g.date);
         }
 
-        // 오버레이 클릭 시 창 닫기 (버튼 클릭 등은 예외 처리)
         function closeSov(e){
             if(e && e.target.tagName.toLowerCase() === 'button') return;
             document.getElementById('sov').style.display='none';
@@ -676,4 +692,4 @@
         }
     </script>
 </body>
-</html>
+</html>        
